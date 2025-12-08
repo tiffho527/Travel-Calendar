@@ -8,28 +8,133 @@
 <!-- FullCalendar CSS -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 
-<style>
-  body { font-family: Arial, sans-serif; margin:0; padding:20px; }
-  header { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-  button { cursor:pointer; padding:6px 12px; }
-  #calendar, #listView { max-width:900px; margin:0 auto; }
-  #listView { display:none; padding:10px; }
-  .list-event { border:1px solid #ccc; padding:10px; margin-bottom:5px; cursor:pointer; }
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
 
-  /* Modal */
-  #eventModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-    background:rgba(0,0,0,0.55); z-index:6000; overflow:auto; }
-  #eventModal .modal-content { background:#fff; margin:5% auto; padding:20px; width:400px; border-radius:8px; position:relative; z-index:6001; }
-  #modalClose { position:absolute; top:10px; right:10px; cursor:pointer; font-weight:bold; color:red; }
-  #eventModal input, #eventModal textarea { width:100%; margin-bottom:10px; padding:5px; }
-  #photoPreview img { max-width:80px; margin:5px; position:relative; }
-  .remove-photo { position:absolute; top:0; right:0; background:red; color:white; font-weight:bold; border:none; cursor:pointer; border-radius:50%; }
-  #travelNext a { margin-right:5px; display:inline-block; }
+<!-- Favicon -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<style>
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    margin:0; 
+    padding:20px; 
+    color:#333;
+}
+
+/* Header */
+header {
+    display:flex; 
+    flex-wrap:wrap; 
+    align-items:center; 
+    gap:10px; 
+    margin-bottom:20px;
+}
+header h1 {
+    margin:0; 
+    font-family:'Montserrat', sans-serif; 
+    font-size:1.8rem;
+}
+header div { flex-grow:1; } /* pushes buttons to right */
+
+/* Buttons */
+button {
+    cursor:pointer;
+    padding:8px 14px;
+    border-radius:6px;
+    border:none;
+    background-color:#1e90ff;
+    color:white;
+    font-weight:600;
+    transition: background-color 0.2s;
+}
+button:hover { background-color:#187bcd; }
+
+/* Calendar & List */
+#calendar, #listView {
+    max-width:900px;
+    margin:0 auto;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    padding:15px;
+}
+#listView { display:none; }
+
+/* List Events */
+.list-event {
+    border:1px solid #ccc;
+    padding:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+    border-radius:8px;
+    background:#fafafa;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.list-event:hover {
+    transform: translateY(-2px);
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Modal */
+#eventModal { 
+    display:none; 
+    position:fixed; 
+    top:0; left:0; width:100%; height:100%; 
+    background:rgba(0,0,0,0.55); 
+    z-index:6000; 
+    overflow:auto; 
+}
+#eventModal .modal-content { 
+    background:#fff; 
+    margin:5% auto; 
+    padding:20px; 
+    width:400px; 
+    border-radius:12px; 
+    position:relative; 
+    z-index:6001; 
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+#modalClose { 
+    position:absolute; 
+    top:10px; right:10px; 
+    cursor:pointer; 
+    font-weight:bold; 
+    color:red; 
+    font-size:1.2rem;
+}
+#eventModal input, #eventModal textarea { 
+    width:100%; 
+    margin-bottom:10px; 
+    padding:5px; 
+}
+#photoPreview img { 
+    max-width:80px; 
+    margin:5px; 
+    border-radius:8px;
+    position:relative; 
+}
+.remove-photo { 
+    position:absolute; top:0; right:0; 
+    background:red; color:white; 
+    font-weight:bold; border:none; 
+    cursor:pointer; border-radius:50%; 
+}
+
+/* Travel Next Links */
+#travelNext a { 
+    margin-right:5px; 
+    display:inline-block; 
+}
 </style>
 </head>
 <body>
 
 <header>
+  <h1>🌍 My Trip Calendar</h1>
+  <div></div>
   <button id="monthViewBtn">Month</button>
   <button id="weekViewBtn">Week</button>
   <button id="dayViewBtn">Day</button>
@@ -73,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let isCalendarView = true;
   let currentEventId = null;
 
-  // Convert date string to datetime-local format (local time)
   function toDateTimeLocalString(dateStr){
     const d = new Date(dateStr);
     if(isNaN(d)) return '';
@@ -81,10 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
     return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
-  // Generate unique ID
   function generateId() { return 'evt-' + Math.random().toString(36).substr(2, 9); }
 
-  // Load events from localStorage or default
   let stored = JSON.parse(localStorage.getItem('events')) || [
     // TOKYO: Jan 26 – Feb 1
     { title: "Arrival in Tokyo", start: "2026-01-26T15:20:00", end: "2026-01-26T17:15:00", address: "Narita Airport, Tokyo", notes: { reservation:"Flight lands at 3:20 PM", cost:"", directions:"Exit terminal, customs ~4:45-5:00 PM", toBring:"Passport, luggage", links:["https://www.narita-airport.jp/en"], photos:[] } },
@@ -94,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { title: "Drop off custom embroidery @ Uniqlo Asakusa", start: "2026-01-27T10:00:00", end: "2026-01-27T12:00:00", address: "Uniqlo Asakusa, Tokyo", notes: { reservation:"", cost:"", directions:"", toBring:"Embroidery items", links:["https://www.uniqlo.com/jp/store/asakusa"], photos:[] } },
     { title: "Lunch @ Waunn.Tokyo", start: "2026-01-27T12:00:00", end: "2026-01-27T14:00:00", address: "Waunn.Tokyo", notes: { reservation:"Confirmed", cost:"", directions:"", toBring:"", links:[], photos:[] } },
     { title: "Harry Café – Various Animals", start: "2026-01-27T14:00:00", end: "2026-01-27T15:30:00", address: "〒111-0032 Tokyo, Taito City, Asakusa, 1-chōme-1-17 増田ビル 5F", notes: { reservation:"Check availability Dec 27", cost:"", directions:"5 min walk from Waunn", toBring:"", links:["https://harinezumi-cafe.com/en/store/asakusa/"], photos:[] } },
-    { title: "Kiwa Seisakujo Asakusabashi (craft supplies)", start: "2026-01-27T15:30:00", end: "2026-01-27T19:30:00", address: "〒111-0053 Tokyo, Taito City, Asakusabashi, 2-chōme−1−2", notes: { reservation:"", cost:"", directions:"15 min train from Asakusa", toBring:"", links:[], photos:[] } },
+    { title: "Kiwa Seisakujo Asakusabashi (craft supplies)", start: "2026-01-27T15:30:00", end: "2026-01-27T16:30:00", address: "〒111-0053 Tokyo, Taito City, Asakusabashi, 2-chōme−1−2", notes: { reservation:"", cost:"", directions:"15 min train from Asakusa", toBring:"", links:[], photos:[] } },
     { title: "Dinner @ Zauo Shinjuku", start: "2026-01-27T19:30:00", address: "3-2-9 Nishishinjuku, Shinjuku City, Tokyo 160-0023", notes: { reservation:"Confirmed", cost:"", directions:"10 min walk from Hilton Tokyo", toBring:"", links:["https://www.zauo.co.jp/en/shop/shinjuku/","https://www.tablecheck.com/en/shops/zauo-shinjuku/reserve"], photos:[] } },
     { title: "Breakfast @ Shinpachi Shokudo", start: "2026-01-28T08:30:00", end: "2026-01-28T09:30:00", address: "Shinjuku, Tokyo", notes: { reservation:"", cost:"", directions:"5-7 min walk from Hilton Tokyo", toBring:"", links:[], photos:[] } },
     { title: "Tokyo Metropolitan Government Building Observatory", start: "2026-01-28T09:30:00", end: "2026-01-28T12:00:00", address: "Shinjuku, Tokyo", notes: { reservation:"Free entry", cost:"", directions:"15 min walk", toBring:"", links:[], photos:[] } },
@@ -123,17 +225,15 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
 
 
-  // Assign IDs and default end times
   stored.forEach(e => {
     if(!e.id) e.id = generateId();
-    if(!e.end) e.end = toDateTimeLocalString(new Date(new Date(e.start).getTime() + 60*60*1000)); // +1 hour
+    if(!e.end) e.end = toDateTimeLocalString(new Date(new Date(e.start).getTime() + 60*60*1000));
   });
 
   function saveToStorage(){
     localStorage.setItem('events', JSON.stringify(stored));
   }
 
-  // Initialize Calendar
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     events: stored,
@@ -141,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   calendar.render();
 
-  // Render list view
   function renderList() {
     listEl.innerHTML = '';
     stored.sort((a,b)=>new Date(a.start)-new Date(b.start)).forEach(evt=>{
@@ -153,15 +252,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Open modal from ID
   function openEventModalFromId(id){
     const evt = stored.find(e=>e.id===id);
     if(!evt) return;
     currentEventId = id;
     document.getElementById('eventTitle').value=evt.title;
     document.getElementById('eventStart').value=toDateTimeLocalString(evt.start);
-    document.getElementById('eventEnd').value = evt.end ? toDateTimeLocalString(evt.end) 
-      : toDateTimeLocalString(new Date(new Date(evt.start).getTime() + 60*60*1000));
+    document.getElementById('eventEnd').value = evt.end ? toDateTimeLocalString(evt.end) : toDateTimeLocalString(new Date(new Date(evt.start).getTime() + 60*60*1000));
     document.getElementById('eventAddress').value=evt.address||'';
     const notes=evt.notes||{};
     document.getElementById('noteReservation').value=notes.reservation||'';
@@ -182,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
         photoPreview.appendChild(removeBtn);
       });
     }
-    // Next event links
     let nextHTML='';
     const idx = stored.findIndex(e=>e.id===id);
     if(idx<stored.length-1){
@@ -199,11 +295,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow='hidden';
   }
 
-  function openEventModal(eventObj){
-    openEventModalFromId(eventObj.id);
-  }
+  function openEventModal(eventObj){ openEventModalFromId(eventObj.id); }
 
-  // Buttons
   document.getElementById('monthViewBtn').onclick=()=>calendar.changeView('dayGridMonth');
   document.getElementById('weekViewBtn').onclick=()=>calendar.changeView('timeGridWeek');
   document.getElementById('dayViewBtn').onclick=()=>calendar.changeView('timeGridDay');
@@ -237,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow='auto';
   };
 
-  // Photo upload preview
   document.getElementById('notePhotos').onchange=function(e){
     const files=e.target.files;
     const photoPreview = document.getElementById('photoPreview');
@@ -255,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  // Save event
   document.getElementById('saveEvent').onclick=function(){
     const startDate = new Date(document.getElementById('eventStart').value);
     const endDateInput = document.getElementById('eventEnd').value;
@@ -288,7 +379,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.overflow='auto';
   };
 
-  // Delete event
   document.getElementById('deleteEvent').onclick = function() {
     if(currentEventId){
       stored = stored.filter(e=>e.id!==currentEventId);
