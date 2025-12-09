@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load default events from external JSON file
   async function loadDefaultEvents() {
     try {
-      const response = await fetch('events.json');
+      const response = await fetch('events.json', {
+        cache: 'force-cache' // Use browser cache for faster loading
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       return await response.json();
     } catch (error) {
       console.error('Error loading default events:', error);
@@ -60,8 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
   }
 
-  // Start initialization
-  initCalendar();
 
   function renderList() {
     listEl.innerHTML = '';
@@ -118,9 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function openEventModal(eventObj){ openEventModalFromId(eventObj.id); }
 
-  document.getElementById('monthViewBtn').onclick=()=>calendar.changeView('dayGridMonth');
-  document.getElementById('weekViewBtn').onclick=()=>calendar.changeView('timeGridWeek');
-  document.getElementById('dayViewBtn').onclick=()=>calendar.changeView('timeGridDay');
+  function setupEventHandlers() {
+    document.getElementById('monthViewBtn').onclick=()=>calendar.changeView('dayGridMonth');
+    document.getElementById('weekViewBtn').onclick=()=>calendar.changeView('timeGridWeek');
+    document.getElementById('dayViewBtn').onclick=()=>calendar.changeView('timeGridDay');
 
   document.getElementById('toggleViewBtn').onclick=function(){
     isCalendarView=!isCalendarView;
@@ -261,5 +265,11 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.readAsText(file);
     e.target.value = ''; // Reset file input
   };
+  }
+
+  // Start initialization and setup handlers after calendar is ready
+  initCalendar().then(() => {
+    setupEventHandlers();
+  });
 
 });
