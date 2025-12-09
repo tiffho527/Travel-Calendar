@@ -1,0 +1,114 @@
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    margin:0;
+    padding:20px;
+    color:#333;
+}
+
+/* Header */
+header {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+}
+header h1 {
+    margin:0;
+    font-family:'Montserrat', sans-serif;
+    font-size:1.8rem;
+}
+header div { flex-grow:1; } /* pushes buttons to right */
+
+/* Buttons */
+button {
+    cursor:pointer;
+    padding:8px 14px;
+    border-radius:6px;
+    border:none;
+    background-color:#1e90ff;
+    color:white;
+    font-weight:600;
+    transition: background-color 0.2s;
+}
+button:hover { background-color:#187bcd; }
+
+/* Calendar & List */
+#calendar, #listView {
+    max-width:900px;
+    margin:0 auto;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    padding:15px;
+}
+#listView { display:none; }
+
+/* List Events */
+.list-event {
+    border:1px solid #ccc;
+    padding:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+    border-radius:8px;
+    background:#fafafa;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.list-event:hover {
+    transform: translateY(-2px);
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Modal */
+#eventModal {
+    display:none;
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.55);
+    z-index:6000;
+    overflow:auto;
+}
+#eventModal .modal-content {
+    background:#fff;
+    margin:5% auto;
+    padding:20px;
+    width:400px;
+    border-radius:12px;
+    position:relative;
+    z-index:6001;
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+#modalClose {
+    position:absolute;
+    top:10px; right:10px;
+    cursor:pointer;
+    font-weight:bold;
+    color:red;
+    font-size:1.2rem;
+}
+#eventModal input, #eventModal textarea {
+    width:100%;
+    margin-bottom:10px;
+    padding:5px;
+}
+#photoPreview img {
+    max-width:80px;
+    margin:5px;
+    border-radius:8px;
+    position:relative;
+}
+.remove-photo {
+    position:absolute; top:0; right:0;
+    background:red; color:white;
+    font-weight:bold; border:none;
+    cursor:pointer; border-radius:50%;
+}
+
+/* Travel Next Links */
+#travelNext a {
+    margin-right:5px;
+    display:inline-block;
+}
+
