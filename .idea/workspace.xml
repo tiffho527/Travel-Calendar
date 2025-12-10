@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c58697f-e0a0-4549-ae0d-f8a20d933223" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ALL_31_EVENTS_EMBEDDED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AUTO_DEPLOY_SETUP.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/COLLABORATION_COMPLETE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/COLLABORATION_OPTIONS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/COLLAB_NOW_DEFAULT.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEPLOY_NOW.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EVENTS_PRELOAD_FIXED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIREBASE_CONFIGURED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIREBASE_SUCCESS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FIXED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NEXT_STEPS_SECURITY.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ONLINE_MODE_RESTORED.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QUICK_START.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/QUICK_START_AUTO_DEPLOY.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RESET_BUTTON_SOLUTION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SECURITY_FIREBASE_CONFIG.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TROUBLESHOOTING.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/WHICH_FILE_LOADS.md" beforeDir="false" />
-    </list>
+    <list default="true" id="1c58697f-e0a0-4549-ae0d-f8a20d933223" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
