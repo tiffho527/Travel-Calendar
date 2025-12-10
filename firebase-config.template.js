@@ -1,18 +1,20 @@
-// Firebase Configuration
-// INSTRUCTIONS: Replace these values with your own Firebase project credentials
-// Get these from: Firebase Console > Project Settings > Your apps > Web app
+// Firebase Configuration Template
+// INSTRUCTIONS:
+// 1. Copy this file to firebase-config.js
+// 2. Replace the placeholder values with your actual Firebase credentials
+// 3. DO NOT commit firebase-config.js to git (it's in .gitignore)
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCif6qQKKnvG2gOgdmZW50UVkC3lSwr0kM",
-  authDomain: "trip-calendar-4f14e.firebaseapp.com",
-  databaseURL: "https://trip-calendar-4f14e-default-rtdb.firebaseio.com",
-  projectId: "trip-calendar-4f14e",
-  storageBucket: "trip-calendar-4f14e.firebasestorage.app",
-  messagingSenderId: "214310496442",
-  appId: "1:214310496442:web:f3646a0f4c1eb815607a83"
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase (will be called from script-collaborative.js)
+// Initialize Firebase (will be called from script.js)
 let database;
 
 function initFirebase() {
