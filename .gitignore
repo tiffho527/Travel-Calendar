@@ -1,5 +1,6 @@
-# Firebase configuration (contains secrets)
-firebase-config.js
+# Firebase configuration - COMMENTED OUT to allow deployment
+# Uncomment the line below if you want to keep firebase-config.js private
+# firebase-config.js
 
 # Environment files
 .env
@@ -21,3 +22,74 @@ npm-debug.log*
 # Dependencies (if you add them later)
 node_modules/
 
+### How Deployment Works Now:
+
+1. You push to `main`
+2. GitHub Pages deploys directly from `main`
+3. Your local `firebase-config.js` works for local development
+4. **BUT:** Deployed site won't have Firebase config (it's gitignored)
+
+---
+
+## ⚠️ IMPORTANT: Deployed Site Issue
+
+**Problem:** Since `firebase-config.js` is in `.gitignore`, GitHub Pages won't have it!
+
+**Your deployed site will show:** "📴 Offline (Local Mode)"
+
+---
+
+## 🎯 Solution: Two Options
+
+### Option 1: Commit firebase-config.js to main (Simplest)
+
+If you're okay with your API key being public (with restrictions):
+
+```bash
+# Remove firebase-config.js from .gitignore
+# Edit .gitignore and remove the line: firebase-config.js
+
+# Then commit it
+git add firebase-config.js
+git commit -m "Add Firebase config for deployment"
+git push origin main
+```
+
+**Why this is okay:**
+- ✅ Firebase API keys are meant to be in client-side code
+- ✅ You can restrict the key to your domain only
+- ✅ Real security comes from Firebase Security Rules
+- ✅ Simplest solution - no multiple branches needed
+
+**Security:** Just restrict your API key to `https://tiffho527.github.io/*`
+
+### Option 2: Use a different deployment platform
+
+Use Netlify or Vercel which support environment variables:
+- Upload your site to Netlify/Vercel
+- Add Firebase credentials as environment variables
+- They inject them at build time
+- More complex but keeps credentials truly secret
+
+---
+
+## 🔒 Recommended: Option 1 with API Key Restrictions
+
+### Step 1: Restrict Your API Key
+
+Go to: https://console.cloud.google.com/apis/credentials?project=trip-calendar-4f14e
+
+Edit your key: `AIzaSyAD2rMKQ1f-wzUTq9CIUpThwrk5Z3oX99Q`
+
+**Add restrictions:**
+- HTTP referrers: `https://tiffho527.github.io/*`
+- HTTP referrers: `http://localhost:*`
+- API restrictions: Firebase Realtime Database API only
+
+**Save**
+
+### Step 2: Remove from .gitignore
+
+<function_calls>
+<invoke name="replace_string_in_file">
+<parameter name="explanation">Remove firebase-config.js from .gitignore to allow deployment
