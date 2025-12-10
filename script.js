@@ -73,20 +73,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load events from Firebase
   async function loadFirebaseEvents() {
+    console.log('🔥 Attempting to load from Firebase...');
     return new Promise((resolve) => {
       const eventsRef = database.ref('events');
       eventsRef.once('value', (snapshot) => {
         const data = snapshot.val();
+        console.log('🔥 Firebase data received:', data ? (Array.isArray(data) ? `Array with ${data.length} items` : 'Object') : 'null/empty');
+
         if (data && Array.isArray(data)) {
           stored = data;
+          console.log(`📦 Loaded ${stored.length} events from Firebase (array)`);
         } else if (data) {
           // Convert object to array if needed
           stored = Object.values(data);
+          console.log(`📦 Loaded ${stored.length} events from Firebase (converted from object)`);
         } else {
           // No data in Firebase, load from local JSON
+          console.log('🔥 Firebase empty, loading default events...');
           loadDefaultEvents().then(events => {
             stored = events;
+            console.log(`📦 Loaded ${stored.length} events from loadDefaultEvents`);
             if (stored.length > 0) {
+              console.log('🔥 Pushing to Firebase...');
               saveToFirebase(); // Push initial data to Firebase
             }
             resolve();
@@ -112,12 +120,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load events from localStorage (fallback)
   async function loadLocalEvents() {
     const localStorageEvents = localStorage.getItem('events');
+    console.log('📍 Checking localStorage:', localStorageEvents ? `Found ${JSON.parse(localStorageEvents).length} events` : 'Empty');
+
     if (localStorageEvents) {
       stored = JSON.parse(localStorageEvents);
+      console.log(`📦 Loaded ${stored.length} events from localStorage`);
     } else {
+      console.log('📍 localStorage empty, loading default events...');
       stored = await loadDefaultEvents();
+      console.log(`📦 After loadDefaultEvents: ${stored.length} events`);
       if (stored.length > 0) {
         saveToLocalStorage();
+        console.log(`💾 Saved ${stored.length} events to localStorage`);
       }
     }
 
@@ -125,6 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if(!e.id) e.id = generateId();
       if(!e.end) e.end = toDateTimeLocalString(new Date(new Date(e.start).getTime() + 60*60*1000));
     });
+
+    console.log(`✅ Final stored array has ${stored.length} events`);
   }
 
   // Load default events from JSON file
@@ -132,11 +148,52 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       const response = await fetch('events.json', { cache: 'force-cache' });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return await response.json();
+      const events = await response.json();
+      console.log(`✅ Loaded ${events.length} events from events.json`);
+      return events;
     } catch (error) {
-      console.error('Error loading default events:', error);
-      return [];
+      console.error('Error loading events.json, using embedded fallback:', error);
+      // Fallback: Return embedded events if JSON fetch fails
+      return getEmbeddedEvents();
     }
+  }
+
+  // Embedded fallback events (in case events.json doesn't load) - ALL 31 EVENTS
+  function getEmbeddedEvents() {
+    console.log('📦 Using embedded fallback with all 31 events');
+    return [
+      {title:"Arrival in Tokyo",start:"2026-01-26T15:20:00",end:"2026-01-26T17:15:00",address:"Narita Airport, Tokyo",notes:{reservation:"Flight lands at 3:20 PM",cost:"",directions:"Exit terminal, customs ~4:45-5:00 PM",links:["https://www.narita-airport.jp/en"],photos:[]}},
+      {title:"Narita Express to Shinjuku",start:"2026-01-26T17:15:00",end:"2026-01-26T18:50:00",address:"Narita Express train",notes:{reservation:"",cost:"~3000 JPY",directions:"80 min ride to Shinjuku",links:[],photos:[]}},
+      {title:"Check-in Hilton Tokyo",start:"2026-01-26T18:50:00",address:"Hilton Tokyo, Shinjuku",notes:{reservation:"Check-in",cost:"",directions:"5 min walk from Shinjuku Station",links:["https://www.hilton.com/en/hotels/tyohitw-hilton-tokyo/"],photos:[]}},
+      {title:"Evening: Ginza Shopping",start:"2026-01-26T20:00:00",address:"Ginza, Tokyo",notes:{reservation:"",cost:"",directions:"Explore department stores or casual dining",links:[],photos:[]}},
+      {title:"Drop off custom embroidery @ Uniqlo Asakusa",start:"2026-01-27T10:00:00",end:"2026-01-27T12:00:00",address:"Uniqlo Asakusa, Tokyo",notes:{reservation:"",cost:"",directions:"",links:["https://www.uniqlo.com/jp/store/asakusa"],photos:[]}},
+      {title:"Lunch @ Waunn.Tokyo",start:"2026-01-27T12:00:00",end:"2026-01-27T14:00:00",address:"Waunn.Tokyo",notes:{reservation:"Confirmed",cost:"",directions:"",links:[],photos:[]}},
+      {title:"Harry Café – Various Animals",start:"2026-01-27T14:00:00",end:"2026-01-27T15:30:00",address:"〒111-0032 Tokyo, Taito City, Asakusa, 1-chōme-1-17 増田ビル 5F",notes:{reservation:"Check availability Dec 27",cost:"",directions:"5 min walk from Waunn",links:["https://harinezumi-cafe.com/en/store/asakusa/"],photos:[]}},
+      {title:"Kiwa Seisakujo Asakusabashi (craft supplies)",start:"2026-01-27T15:30:00",end:"2026-01-27T16:30:00",address:"〒111-0053 Tokyo, Taito City, Asakusabashi, 2-chōme−1−2",notes:{reservation:"",cost:"",directions:"15 min train from Asakusa",links:[],photos:[]}},
+      {title:"Dinner @ Zauo Shinjuku",start:"2026-01-27T19:30:00",address:"3-2-9 Nishishinjuku, Shinjuku City, Tokyo 160-0023",notes:{reservation:"Confirmed",cost:"",directions:"10 min walk from Hilton Tokyo",links:["https://www.zauo.co.jp/en/shop/shinjuku/","https://www.tablecheck.com/en/shops/zauo-shinjuku/reserve"],photos:[]}},
+      {title:"Breakfast @ Shinpachi Shokudo",start:"2026-01-28T08:30:00",end:"2026-01-28T09:30:00",address:"Shinjuku, Tokyo",notes:{reservation:"",cost:"",directions:"5-7 min walk from Hilton Tokyo",links:[],photos:[]}},
+      {title:"Tokyo Metropolitan Government Building Observatory",start:"2026-01-28T09:30:00",end:"2026-01-28T12:00:00",address:"Shinjuku, Tokyo",notes:{reservation:"Free entry",cost:"",directions:"15 min walk",links:[],photos:[]}},
+      {title:"CAPPINESS Capybara Café",start:"2026-01-28T12:00:00",end:"2026-01-28T17:00:00",address:"Harajuku, Tokyo",notes:{reservation:"Available 14 days in advance",cost:"",directions:"30 min via JR Yamanote Line from Shinjuku",links:["https://www.tablecheck.com/en/shops/cappiness/reserve"],photos:[]}},
+      {title:"Hotel Change to ANA InterContinental Tokyo",start:"2026-01-28T17:00:00",end:"2026-01-28T18:00:00",address:"Roppongi, Tokyo",notes:{reservation:"Late checkout Hilton",cost:"",directions:"25 min taxi / 35 min train",links:["https://www.anaintercontinental-tokyo.com/"],photos:[]}},
+      {title:"Kinokurashi Ginza Chopstick Making Class",start:"2026-01-28T18:00:00",address:"Kinokurashi Ginza",notes:{reservation:"Confirmed",cost:"",directions:"15–25 min from hotel",links:[],photos:[]}},
+      {title:"Depart Hotel → Snoopy Museum",start:"2026-01-29T08:20:00",end:"2026-01-29T10:00:00",address:"ANA InterContinental Tokyo",notes:{reservation:"",cost:"",directions:"Train to Snoopy Museum ~1h 20min",links:["https://snoopymuseum.tokyo/s/smt/?ima=0000"],photos:[]}},
+      {title:"Peanuts Café / Snoopy Museum",start:"2026-01-29T10:00:00",end:"2026-01-29T12:45:00",address:"Snoopy Museum Tokyo",notes:{reservation:"",cost:"",directions:"Museum hours 10:00–18:00, last entry 17:30",links:[],photos:[]}},
+      {title:"Shin-Yokohama Ramen Museum",start:"2026-01-29T12:45:00",address:"Shin-Yokohama",notes:{reservation:"Meet with MC",cost:"450 yen admission",directions:"~40 min travel from museum",links:["https://www.raumen.co.jp/","https://www.raumen.co.jp/makingnoodle_en.html","https://www.asoview.com/channel/activities/ja/takigami-raumen/offices/2268/courses?language_type=en"],photos:[]}},
+      {title:"Dinner @ Ginza Happo",start:"2026-01-30T19:00:00",address:"Ginza, Tokyo",notes:{reservation:"Confirmed",cost:"",directions:"",links:["https://ginzahappo.owst.jp"],photos:[]}},
+      {title:"Lunch @ Gyukatsu Motomura Shinjuku Minamiguchi",start:"2026-01-31T11:00:00",end:"2026-01-31T13:00:00",address:"3-32-6 Shinjuku, Tokyo",notes:{reservation:"Book after Dec 29",cost:"",directions:"",links:["https://www.tablecheck.com/en/shops/gyukatsu-motomura-shinjuku-minamiguchi/reserve"],photos:[]}},
+      {title:"Kuu Head Spa",start:"2026-01-31T13:00:00",end:"2026-01-31T16:00:00",address:"Omotesandō, Tokyo",notes:{reservation:"TBD",cost:"",directions:"JR Yamanote to Shibuya + Ginza Line to Omotesando",links:[],photos:[]}},
+      {title:"Raymond Lam Concert",start:"2026-02-01T15:00:00",address:"Tokyo Garden Theater, Ariake",notes:{reservation:"Confirmed tickets received",cost:"",directions:"Arrive 1h early for photos, merch, snacks",links:[],photos:[]}},
+      {title:"Fly Tokyo → Sapporo",start:"2026-02-02T12:50:00",end:"2026-02-02T15:30:00",address:"HND → CTS",notes:{reservation:"Flight",cost:"",directions:"Depart ANA InterContinental Tokyo 10:40 AM",links:[],photos:[]}},
+      {title:"Arrive Sapporo / Check-in Fairfield Marriott",start:"2026-02-02T15:30:00",address:"Fairfield Marriott Sapporo",notes:{reservation:"",cost:"",directions:"Rapid Airport Express to Sapporo Station, walk/taxi 5–10 min",links:["https://www.marriott.com/en-us/hotels/cepfs-fairfield-marriott-sapporo/overview/"],photos:[]}},
+      {title:"Explore Sapporo",start:"2026-02-03T09:00:00",address:"Sapporo",notes:{reservation:"",cost:"",directions:"",links:[],photos:[]}},
+      {title:"Explore Sapporo / Meet with MC",start:"2026-02-04T14:00:00",address:"Sapporo",notes:{reservation:"",cost:"",directions:"",links:[],photos:[]}},
+      {title:"Royce' Chocolate World",start:"2026-02-05T10:00:00",address:"2-2-2 Kita 7 Jonishi, Chitose, Hokkaido 066-0061",notes:{reservation:"DIY chocolate tickets",cost:"",directions:"Train 1h10 from Sapporo, taxi/walk from station",links:["https://www.e-tix.jp/royce-cct/en/"],photos:[]}},
+      {title:"Explore Sapporo / Bentley returns",start:"2026-02-06T09:00:00",address:"Sapporo",notes:{reservation:"",cost:"",directions:"MC flight 2pm",links:[],photos:[]}},
+      {title:"Explore Sapporo",start:"2026-02-07T09:00:00",address:"Sapporo",notes:{reservation:"",cost:"",directions:"",links:[],photos:[]}},
+      {title:"Explore Sapporo",start:"2026-02-08T09:00:00",address:"Sapporo",notes:{reservation:"",cost:"",directions:"",links:[],photos:[]}},
+      {title:"Fly Sapporo → Tokyo",start:"2026-02-09T10:00:00",address:"CTS → HND",notes:{reservation:"Flight",cost:"",directions:"Leave Sapporo hotel early",links:[],photos:[]}},
+      {title:"Fly Home",start:"2026-02-10T10:00:00",address:"HND",notes:{reservation:"Flight",cost:"",directions:"",links:[],photos:[]}}
+    ];
   }
 
   // Setup Firebase real-time listeners
@@ -364,6 +421,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Import functionality
     document.getElementById('importBtn').onclick = function() {
       document.getElementById('importFile').click();
+    };
+
+    // Reset to all 31 events
+    document.getElementById('resetEventsBtn').onclick = function() {
+      if(confirm('Reset to all 31 default events? This will replace current events for ALL collaborators!')){
+        console.log('🔄 Resetting to all 31 embedded events...');
+        stored = getEmbeddedEvents();
+        stored.forEach(e => {
+          if(!e.id) e.id = generateId();
+          if(!e.end) e.end = toDateTimeLocalString(new Date(new Date(e.start).getTime() + 60*60*1000));
+        });
+        console.log(`✅ Reset to ${stored.length} events`);
+        saveToFirebase();
+        calendar.removeAllEvents();
+        calendar.addEventSource(stored);
+        if(!isCalendarView) renderList();
+        alert(`Successfully reset to ${stored.length} events!`);
+      }
     };
 
     document.getElementById('importFile').onchange = function(e) {
