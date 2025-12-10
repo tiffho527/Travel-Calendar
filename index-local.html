@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trip Calendar - Collaborative</title>
+<title>Trip Calendar</title>
 
 <!-- FullCalendar CSS -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
@@ -19,38 +19,6 @@
 
 <!-- Preload event data for faster initial load -->
 <link rel="preload" href="events.json" as="fetch" crossorigin="anonymous">
-
-<style>
-/* Connection status indicator */
-#connectionStatus {
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-left: auto;
-}
-.status-connecting {
-  background: #ffd700;
-  color: #333;
-}
-.status-connected {
-  background: #4caf50;
-  color: white;
-}
-.status-offline {
-  background: #9e9e9e;
-  color: white;
-}
-.status-reconnecting {
-  background: #ff9800;
-  color: white;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-</style>
 </head>
 <body>
 
@@ -64,8 +32,8 @@
   <button id="addEventBtn">Add Event</button>
   <button id="exportBtn">Export Events</button>
   <button id="importBtn">Import Events</button>
+  <button onclick="window.location.href='index.html'" style="background:#4caf50;">🤝 Enable Collaboration</button>
   <input type="file" id="importFile" accept=".json" style="display:none;">
-  <!-- Status indicator will be added here by script -->
 </header>
 
 <div id="calendar"></div>
@@ -93,19 +61,11 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-<!-- Firebase Configuration -->
-<script src="firebase-config.js"></script>
-
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-<!-- Custom Collaborative Script -->
-<script src="script-collaborative.js"></script>
+<!-- Custom Script -->
+<script src="script.js"></script>
 
 </body>
 </html>
-
