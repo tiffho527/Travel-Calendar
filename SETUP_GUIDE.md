@@ -29,19 +29,36 @@
 ### Step 4: Update Your Configuration
 
 1. Open `firebase-config.js` in your project
-2. Replace the placeholder values with your Firebase config:
+2. **⚠️ IMPORTANT:** Firebase will give you code with `import` statements - **ignore those!**
+3. Copy only the values from your firebaseConfig object
+4. Add the `databaseURL` (it's usually not in the Firebase Console snippet)
+
+**Format should look like this (NO import statements):**
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   authDomain: "tripcalendar-xxxxx.firebaseapp.com",
-  databaseURL: "https://tripcalendar-xxxxx-default-rtdb.firebaseio.com",
+  databaseURL: "https://tripcalendar-xxxxx-default-rtdb.firebaseio.com",  // Add this!
   projectId: "tripcalendar-xxxxx",
   storageBucket: "tripcalendar-xxxxx.appspot.com",
   messagingSenderId: "123456789012",
   appId: "1:123456789012:web:abcdef1234567890abcdef"
 };
 ```
+
+**The `databaseURL` format is:**
+```
+https://YOUR-PROJECT-ID-default-rtdb.firebaseio.com
+```
+
+**Don't include:**
+- ❌ `import` statements
+- ❌ `initializeApp()` calls  
+- ❌ `getAnalytics()` calls
+- ❌ Any other initialization code
+
+Just the `const firebaseConfig = { ... }` object!
 
 ### Step 5: Deploy to GitHub Pages
 

@@ -3,14 +3,13 @@
 // Get these from: Firebase Console > Project Settings > Your apps > Web app
 
 const firebaseConfig = {
-  // TODO: Replace with your Firebase project configuration
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCif6qQKKnvG2gOgdmZW50UVkC3lSwr0kM",
+  authDomain: "trip-calendar-4f14e.firebaseapp.com",
+  databaseURL: "https://trip-calendar-4f14e-default-rtdb.firebaseio.com",
+  projectId: "trip-calendar-4f14e",
+  storageBucket: "trip-calendar-4f14e.firebasestorage.app",
+  messagingSenderId: "214310496442",
+  appId: "1:214310496442:web:f3646a0f4c1eb815607a83"
 };
 
 // Initialize Firebase (will be called from script-collaborative.js)
