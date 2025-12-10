@@ -1,6 +1,6 @@
 # Firebase configuration - COMMENTED OUT to allow deployment
 # Uncomment the line below if you want to keep firebase-config.js private
-# firebase-config.js
+firebase-config.js
 
 # Environment files
 .env
@@ -73,23 +73,3 @@ Use Netlify or Vercel which support environment variables:
 
 ---
 
-## 🔒 Recommended: Option 1 with API Key Restrictions
-
-### Step 1: Restrict Your API Key
-
-Go to: https://console.cloud.google.com/apis/credentials?project=trip-calendar-4f14e
-
-Edit your key: `AIzaSyAD2rMKQ1f-wzUTq9CIUpThwrk5Z3oX99Q`
-
-**Add restrictions:**
-- HTTP referrers: `https://tiffho527.github.io/*`
-- HTTP referrers: `http://localhost:*`
-- API restrictions: Firebase Realtime Database API only
-
-**Save**
-
-### Step 2: Remove from .gitignore
-
-<function_calls>
-<invoke name="replace_string_in_file">
-<parameter name="explanation">Remove firebase-config.js from .gitignore to allow deployment
