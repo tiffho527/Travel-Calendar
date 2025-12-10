@@ -7,20 +7,22 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Setup deployment
         run: |
-          git clone https://github.com/${{ github.repository }}.git .
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git clone --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git repo
+          cd repo
 
       - name: Create firebase-config.js from secrets
         run: |
+          cd repo
           cat > firebase-config.js << 'EOF'
           // Firebase Configuration
           const firebaseConfig = {
@@ -63,11 +65,16 @@ jobs:
           }
           EOF
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: '.'
+      - name: Create .nojekyll file
+        run: |
+          cd repo
+          touch .nojekyll
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
+      - name: Deploy to gh-pages branch
+        run: |
+          cd repo
+          git checkout -b gh-pages 2>/dev/null || git checkout gh-pages
+          git add firebase-config.js .nojekyll
+          git commit -m "Deploy with Firebase config from secrets [skip ci]" || echo "No changes to commit"
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
 

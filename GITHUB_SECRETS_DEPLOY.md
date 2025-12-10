@@ -32,15 +32,18 @@ I've set up a GitHub Actions workflow that:
 
 ### Step 1: Configure GitHub Pages Source
 
-You need to tell GitHub Pages to use the workflow deployment:
+**Note:** Due to your repository's action restrictions, the workflow deploys to a `gh-pages` branch (which it creates automatically).
 
 1. **Go to:** https://github.com/tiffho527/Travel-Calendar/settings/pages
 
 2. **Under "Source":**
-   - Change from: "Deploy from a branch"
-   - Change to: **"GitHub Actions"** ⭐
+   - Select: "Deploy from a branch"
+   - Branch: **"gh-pages"**
+   - Folder: **"/ (root)"**
 
-3. **Save** (that's it!)
+3. **Save**
+
+The workflow will create and manage the `gh-pages` branch automatically - you never need to touch it!
 
 ---
 
