@@ -1,0 +1,93 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual trigger from Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Create/update gh-pages branch
+        run: |
+          # Check if gh-pages branch exists remotely
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            echo "gh-pages branch exists, checking it out"
+            git fetch origin gh-pages
+            git checkout gh-pages
+            git merge main -m "Auto-deploy from main"
+          else
+            echo "gh-pages branch doesn't exist, creating it"
+            git checkout -b gh-pages
+          fi
+
+      - name: Add firebase-config.js to gh-pages
+        run: |
+          # Recreate firebase-config.js from GitHub Secrets
+          cat > firebase-config.js << 'EOF'
+          // Firebase Configuration
+          const firebaseConfig = {
+            apiKey: "${{ secrets.FIREBASE_API_KEY }}",
+            authDomain: "${{ secrets.FIREBASE_AUTH_DOMAIN }}",
+            databaseURL: "${{ secrets.FIREBASE_DATABASE_URL }}",
+            projectId: "${{ secrets.FIREBASE_PROJECT_ID }}",
+            storageBucket: "${{ secrets.FIREBASE_STORAGE_BUCKET }}",
+            messagingSenderId: "${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}",
+            appId: "${{ secrets.FIREBASE_APP_ID }}"
+          };
+          
+          // Initialize Firebase (will be called from script.js)
+          let database;
+          
+          function initFirebase() {
+            // Check if Firebase SDK is loaded
+            if (typeof firebase === 'undefined') {
+              console.log('📴 Firebase SDK not loaded - using local mode');
+              return false;
+            }
+          
+            // Check if config has been updated from placeholder values
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY_HERE') {
+              console.log('📴 Firebase not configured - using local mode');
+              console.log('ℹ️  To enable collaboration: Update firebase-config.js with your Firebase credentials');
+              return false;
+            }
+          
+            try {
+              firebase.initializeApp(firebaseConfig);
+              database = firebase.database();
+              console.log('✅ Firebase initialized successfully');
+              return true;
+            } catch (error) {
+              console.log('📴 Firebase initialization failed - using local mode:', error.message);
+              return false;
+            }
+          }
+          
+          // Export for use in other scripts
+          if (typeof module !== 'undefined' && module.exports) {
+            module.exports = { initFirebase, firebaseConfig };
+          }
+          EOF
+          
+          git add firebase-config.js
+          git commit -m "Update firebase-config.js for deployment" || echo "No changes to firebase-config.js"
+
+      - name: Push to gh-pages
+        run: |
+          git push origin gh-pages --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
