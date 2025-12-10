@@ -1,5 +1,4 @@
-# Firebase configuration - COMMENTED OUT to allow deployment
-# Uncomment the line below if you want to keep firebase-config.js private
+# Firebase configuration (contains secrets - keep local only)
 firebase-config.js
 
 # Environment files
@@ -22,7 +21,6 @@ npm-debug.log*
 # Dependencies (if you add them later)
 node_modules/
 
-### How Deployment Works Now:
 
 1. You push to `main`
 2. GitHub Pages deploys directly from `main`
