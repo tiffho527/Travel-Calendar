@@ -25,10 +25,16 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          # Strip any whitespace/newlines from DATABASE_URL (it has a trailing newline!)
-          CLEAN_DATABASE_URL=$(echo "${FIREBASE_DATABASE_URL}" | tr -d '\n\r\t ' | xargs)
+          # Aggressively strip ALL whitespace and special characters from DATABASE_URL
+          CLEAN_DATABASE_URL="${FIREBASE_DATABASE_URL}"
+          # Remove all whitespace, newlines, carriage returns, tabs
+          CLEAN_DATABASE_URL=$(echo -n "${CLEAN_DATABASE_URL}" | tr -d '[:space:]')
+          # Also remove any backticks just in case
+          CLEAN_DATABASE_URL=$(echo -n "${CLEAN_DATABASE_URL}" | tr -d '`')
           
-          echo "✅ DATABASE_URL cleaned and ready (length: ${#CLEAN_DATABASE_URL})"
+          echo "✅ DATABASE_URL cleaned (length: ${#CLEAN_DATABASE_URL})"
+          echo "✅ First 20 chars: ${CLEAN_DATABASE_URL:0:20}"
+          echo "✅ Last 10 chars: ${CLEAN_DATABASE_URL: -10}"
           
           # Create firebase-config.js using echo to avoid YAML parsing issues
           echo "const firebaseConfig = {" > firebase-config.js
