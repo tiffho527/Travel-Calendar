@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c58697f-e0a0-4549-ae0d-f8a20d933223" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/FOUND_THE_PROBLEM_SECRET_WRONG.md" beforeDir="false" afterPath="$PROJECT_DIR$/FOUND_THE_PROBLEM_SECRET_WRONG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DATABASE_URL_55_CHARACTERS.md" beforeDir="false" afterPath="$PROJECT_DIR$/DATABASE_URL_55_CHARACTERS.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
