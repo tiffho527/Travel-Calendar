@@ -20,43 +20,45 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          # Create firebase-config.js from secrets
-          echo "// Firebase Configuration (injected from GitHub Secrets during deployment)" > firebase-config.js
-          echo "const firebaseConfig = {" >> firebase-config.js
-          echo "  apiKey: \"${{ secrets.FIREBASE_API_KEY }}\"," >> firebase-config.js
-          echo "  authDomain: \"${{ secrets.FIREBASE_AUTH_DOMAIN }}\"," >> firebase-config.js
-          echo "  databaseURL: \"${{ secrets.FIREBASE_DATABASE_URL }}\"," >> firebase-config.js
-          echo "  projectId: \"${{ secrets.FIREBASE_PROJECT_ID }}\"," >> firebase-config.js
-          echo "  storageBucket: \"${{ secrets.FIREBASE_STORAGE_BUCKET }}\"," >> firebase-config.js
-          echo "  messagingSenderId: \"${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}\"," >> firebase-config.js
-          echo "  appId: \"${{ secrets.FIREBASE_APP_ID }}\"" >> firebase-config.js
-          echo "};" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "let database;" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "function initFirebase() {" >> firebase-config.js
-          echo "  if (typeof firebase === 'undefined') {" >> firebase-config.js
-          echo "    console.log('Firebase SDK not loaded');" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "  if (!firebaseConfig.apiKey) {" >> firebase-config.js
-          echo "    console.log('Firebase not configured');" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "  try {" >> firebase-config.js
-          echo "    firebase.initializeApp(firebaseConfig);" >> firebase-config.js
-          echo "    database = firebase.database();" >> firebase-config.js
-          echo "    console.log('Firebase initialized successfully');" >> firebase-config.js
-          echo "    return true;" >> firebase-config.js
-          echo "  } catch (error) {" >> firebase-config.js
-          echo "    console.log('Firebase initialization failed:', error.message);" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "}" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "if (typeof module !== 'undefined' && module.exports) {" >> firebase-config.js
-          echo "  module.exports = { initFirebase, firebaseConfig };" >> firebase-config.js
-          echo "}" >> firebase-config.js
+          # Create firebase-config.js from secrets using here-document
+          cat > firebase-config.js <<EOF
+// Firebase Configuration (injected from GitHub Secrets during deployment)
+const firebaseConfig = {
+  apiKey: "${{ secrets.FIREBASE_API_KEY }}",
+  authDomain: "${{ secrets.FIREBASE_AUTH_DOMAIN }}",
+  databaseURL: "${{ secrets.FIREBASE_DATABASE_URL }}",
+  projectId: "${{ secrets.FIREBASE_PROJECT_ID }}",
+  storageBucket: "${{ secrets.FIREBASE_STORAGE_BUCKET }}",
+  messagingSenderId: "${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}",
+  appId: "${{ secrets.FIREBASE_APP_ID }}"
+};
+
+let database;
+
+function initFirebase() {
+  if (typeof firebase === 'undefined') {
+    console.log('Firebase SDK not loaded');
+    return false;
+  }
+  if (!firebaseConfig.apiKey) {
+    console.log('Firebase not configured');
+    return false;
+  }
+  try {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log('Firebase initialized successfully');
+    return true;
+  } catch (error) {
+    console.log('Firebase initialization failed:', error.message);
+    return false;
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { initFirebase, firebaseConfig };
+}
+EOF
           
           echo "✅ Created firebase-config.js from GitHub Secrets"
           
