@@ -25,6 +25,11 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
+          # Debug: Show the DATABASE_URL character by character
+          echo "DEBUG: DATABASE_URL characters:"
+          echo "${FIREBASE_DATABASE_URL}" | od -An -tx1
+          echo "DEBUG: DATABASE_URL length: ${#FIREBASE_DATABASE_URL}"
+          
           # Create firebase-config.js using echo to avoid YAML parsing issues
           echo "const firebaseConfig = {" > firebase-config.js
           echo "  apiKey: \"${FIREBASE_API_KEY}\"," >> firebase-config.js
