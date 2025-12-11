@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trip Calendar</title>
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
+
+<!-- Favicon -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<!-- Custom Styles -->
+<link rel="stylesheet" href="styles.css">
+
+<!-- Preload event data for faster initial load -->
+<link rel="preload" href="events.json" as="fetch" crossorigin="anonymous">
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🌍 My Trip Calendar</h1>
+  </div>
+
+  <div class="header-center">
+    <button id="addEventBtn" class="btn-primary">+ Add Event</button>
+
+    <div id="viewControls" class="view-controls">
+      <div class="button-group">
+        <button id="monthViewBtn" class="active">Month</button>
+        <button id="weekViewBtn">Week</button>
+        <button id="dayViewBtn">Day</button>
+      </div>
+      <button id="toggleViewBtn" class="btn-toggle">📅 Toggle View</button>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div id="connectionStatus" class="status-offline">📴 Local Mode</div>
+    <button id="actionsMenuBtn" class="btn-actions" aria-label="Actions menu">
+      <span class="hamburger-icon">☰</span>
+    </button>
+  </div>
+
+  <input type="file" id="importFile" accept=".json" style="display:none;">
+</header>
+
+<!-- Actions Dropdown Menu -->
+<div id="actionsMenu" class="actions-menu">
+  <button id="exportBtn" class="menu-item">📤 Export Events</button>
+  <button id="importBtn" class="menu-item">📥 Import Events</button>
+  <hr class="menu-divider">
+  <button id="collabModeBtn" class="menu-item">🤝 Enable Collaboration</button>
+</div>
+
+<div id="calendar"></div>
+<div id="listView"></div>
+
+<!-- Event Modal -->
+<div id="eventModal">
+  <div class="modal-content">
+    <span id="modalClose">✖</span>
+    <h2>Add Event</h2>
+    <input type="text" id="eventTitle" placeholder="Title">
+    <input type="datetime-local" id="eventStart" placeholder="Start Time">
+    <input type="datetime-local" id="eventEnd" placeholder="End Time">
+    <input type="text" id="eventAddress" placeholder="Address">
+    <h3>Notes</h3>
+    <input type="text" id="noteReservation" placeholder="Reservation">
+    <input type="text" id="noteCost" placeholder="Cost">
+    <input type="text" id="noteDirections" placeholder="Directions">
+    <input type="text" id="noteLinks" placeholder="Links, comma separated">
+    <input type="file" id="notePhotos" multiple>
+    <div id="photoPreview"></div>
+    <div id="travelNext"></div>
+    <button id="saveEvent">Save Event</button>
+    <button id="deleteEvent" style="background:red; color:white;">Delete Event</button>
+  </div>
+</div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<!-- Custom Local Script -->
+<script src="script-local.js"></script>
+
+</body>
+</html>
