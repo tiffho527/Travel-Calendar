@@ -31,42 +31,54 @@ jobs:
           echo "✅ Using HARDCODED DATABASE_URL (length: ${#CLEAN_DATABASE_URL})"
           echo "✅ This bypasses the GitHub Secret to test deployment"
           
-          # Create firebase-config.js using echo to avoid YAML parsing issues
-          echo "const firebaseConfig = {" > firebase-config.js
-          echo "  apiKey: \"${FIREBASE_API_KEY}\"," >> firebase-config.js
-          echo "  authDomain: \"${FIREBASE_AUTH_DOMAIN}\"," >> firebase-config.js
-          echo "  databaseURL: \"${CLEAN_DATABASE_URL}\"," >> firebase-config.js
-          echo "  projectId: \"${FIREBASE_PROJECT_ID}\"," >> firebase-config.js
-          echo "  storageBucket: \"${FIREBASE_STORAGE_BUCKET}\"," >> firebase-config.js
-          echo "  messagingSenderId: \"${FIREBASE_MESSAGING_SENDER_ID}\"," >> firebase-config.js
-          echo "  appId: \"${FIREBASE_APP_ID}\"" >> firebase-config.js
-          echo "};" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "let database;" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "function initFirebase() {" >> firebase-config.js
-          echo "  if (typeof firebase === 'undefined') {" >> firebase-config.js
-          echo "    console.log('Firebase SDK not loaded');" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "  if (!firebaseConfig.apiKey) {" >> firebase-config.js
-          echo "    console.log('Firebase not configured');" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "  try {" >> firebase-config.js
-          echo "    firebase.initializeApp(firebaseConfig);" >> firebase-config.js
-          echo "    database = firebase.database();" >> firebase-config.js
-          echo "    console.log('Firebase initialized successfully');" >> firebase-config.js
-          echo "    return true;" >> firebase-config.js
-          echo "  } catch (error) {" >> firebase-config.js
-          echo "    console.log('Firebase initialization failed:', error.message);" >> firebase-config.js
-          echo "    return false;" >> firebase-config.js
-          echo "  }" >> firebase-config.js
-          echo "}" >> firebase-config.js
-          echo "" >> firebase-config.js
-          echo "if (typeof module !== 'undefined' && module.exports) {" >> firebase-config.js
-          echo "  module.exports = { initFirebase, firebaseConfig };" >> firebase-config.js
-          echo "}" >> firebase-config.js
+          # Create firebase-config.js using printf to avoid ANY shell interpretation
+          cat > firebase-config.js <<'ENDOFFILE'
+const firebaseConfig = {
+  apiKey: "REPLACE_API_KEY",
+  authDomain: "REPLACE_AUTH_DOMAIN",
+  databaseURL: "REPLACE_DATABASE_URL",
+  projectId: "REPLACE_PROJECT_ID",
+  storageBucket: "REPLACE_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_MESSAGING_SENDER_ID",
+  appId: "REPLACE_APP_ID"
+};
+
+let database;
+
+function initFirebase() {
+  if (typeof firebase === 'undefined') {
+    console.log('Firebase SDK not loaded');
+    return false;
+  }
+  if (!firebaseConfig.apiKey) {
+    console.log('Firebase not configured');
+    return false;
+  }
+  try {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log('Firebase initialized successfully');
+    return true;
+  } catch (error) {
+    console.log('Firebase initialization failed:', error.message);
+    return false;
+  }
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { initFirebase, firebaseConfig };
+}
+ENDOFFILE
+
+          # Now do safe replacements using sed with different delimiter
+          sed -i.bak "s|REPLACE_API_KEY|${FIREBASE_API_KEY}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_AUTH_DOMAIN|${FIREBASE_AUTH_DOMAIN}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_DATABASE_URL|${CLEAN_DATABASE_URL}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_PROJECT_ID|${FIREBASE_PROJECT_ID}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_STORAGE_BUCKET|${FIREBASE_STORAGE_BUCKET}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_MESSAGING_SENDER_ID|${FIREBASE_MESSAGING_SENDER_ID}|g" firebase-config.js
+          sed -i.bak "s|REPLACE_APP_ID|${FIREBASE_APP_ID}|g" firebase-config.js
+          rm -f firebase-config.js.bak
           
           # Verify file was created
           if [ -f firebase-config.js ]; then
