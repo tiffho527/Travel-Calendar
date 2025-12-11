@@ -69,27 +69,31 @@ jobs:
           # Create .nojekyll file
           touch .nojekyll
           
-          # Add all files including firebase-config.js
-          git add -A
+          # Stage firebase-config.js and .nojekyll
+          git add firebase-config.js .nojekyll
           
           # Fetch gh-pages if it exists
           git fetch origin gh-pages 2>/dev/null || true
           
-          # Create/switch to gh-pages branch
+          # Check if gh-pages exists
           if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
-            # gh-pages exists, check it out
+            # gh-pages exists - switch to it
             git checkout gh-pages
-            git reset --hard origin/main
-            git checkout origin/main -- firebase-config.js .nojekyll
+            
+            # Copy all files from main
+            git checkout main -- .
+            
+            # Re-add firebase-config.js and .nojekyll (they're in .gitignore on main)
+            git add -f firebase-config.js .nojekyll
           else
-            # gh-pages doesn't exist, create orphan branch
+            # gh-pages doesn't exist - create new orphan branch
             git checkout --orphan gh-pages
+            
+            # Add all files
+            git add -A
           fi
           
-          # Ensure all files are added
-          git add -A
-          
-          # Commit
+          # Commit changes
           git commit -m "Deploy with Firebase config from secrets [skip ci]" || echo "No changes to commit"
           
           # Push to gh-pages
