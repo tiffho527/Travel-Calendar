@@ -25,44 +25,42 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          # Create firebase-config.js by writing directly with environment variable substitution
-          cat > firebase-config.js <<ENDCONFIG
-const firebaseConfig = {
-  apiKey: "${FIREBASE_API_KEY}",
-  authDomain: "${FIREBASE_AUTH_DOMAIN}",
-  databaseURL: "${FIREBASE_DATABASE_URL}",
-  projectId: "${FIREBASE_PROJECT_ID}",
-  storageBucket: "${FIREBASE_STORAGE_BUCKET}",
-  messagingSenderId: "${FIREBASE_MESSAGING_SENDER_ID}",
-  appId: "${FIREBASE_APP_ID}"
-};
-
-let database;
-
-function initFirebase() {
-  if (typeof firebase === 'undefined') {
-    console.log('Firebase SDK not loaded');
-    return false;
-  }
-  if (!firebaseConfig.apiKey) {
-    console.log('Firebase not configured');
-    return false;
-  }
-  try {
-    firebase.initializeApp(firebaseConfig);
-    database = firebase.database();
-    console.log('Firebase initialized successfully');
-    return true;
-  } catch (error) {
-    console.log('Firebase initialization failed:', error.message);
-    return false;
-  }
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initFirebase, firebaseConfig };
-}
-ENDCONFIG
+          # Create firebase-config.js using echo to avoid YAML parsing issues
+          echo "const firebaseConfig = {" > firebase-config.js
+          echo "  apiKey: \"${FIREBASE_API_KEY}\"," >> firebase-config.js
+          echo "  authDomain: \"${FIREBASE_AUTH_DOMAIN}\"," >> firebase-config.js
+          echo "  databaseURL: \"${FIREBASE_DATABASE_URL}\"," >> firebase-config.js
+          echo "  projectId: \"${FIREBASE_PROJECT_ID}\"," >> firebase-config.js
+          echo "  storageBucket: \"${FIREBASE_STORAGE_BUCKET}\"," >> firebase-config.js
+          echo "  messagingSenderId: \"${FIREBASE_MESSAGING_SENDER_ID}\"," >> firebase-config.js
+          echo "  appId: \"${FIREBASE_APP_ID}\"" >> firebase-config.js
+          echo "};" >> firebase-config.js
+          echo "" >> firebase-config.js
+          echo "let database;" >> firebase-config.js
+          echo "" >> firebase-config.js
+          echo "function initFirebase() {" >> firebase-config.js
+          echo "  if (typeof firebase === 'undefined') {" >> firebase-config.js
+          echo "    console.log('Firebase SDK not loaded');" >> firebase-config.js
+          echo "    return false;" >> firebase-config.js
+          echo "  }" >> firebase-config.js
+          echo "  if (!firebaseConfig.apiKey) {" >> firebase-config.js
+          echo "    console.log('Firebase not configured');" >> firebase-config.js
+          echo "    return false;" >> firebase-config.js
+          echo "  }" >> firebase-config.js
+          echo "  try {" >> firebase-config.js
+          echo "    firebase.initializeApp(firebaseConfig);" >> firebase-config.js
+          echo "    database = firebase.database();" >> firebase-config.js
+          echo "    console.log('Firebase initialized successfully');" >> firebase-config.js
+          echo "    return true;" >> firebase-config.js
+          echo "  } catch (error) {" >> firebase-config.js
+          echo "    console.log('Firebase initialization failed:', error.message);" >> firebase-config.js
+          echo "    return false;" >> firebase-config.js
+          echo "  }" >> firebase-config.js
+          echo "}" >> firebase-config.js
+          echo "" >> firebase-config.js
+          echo "if (typeof module !== 'undefined' && module.exports) {" >> firebase-config.js
+          echo "  module.exports = { initFirebase, firebaseConfig };" >> firebase-config.js
+          echo "}" >> firebase-config.js
           
           # Verify file was created
           if [ -f firebase-config.js ]; then
