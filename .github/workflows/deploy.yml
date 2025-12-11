@@ -25,16 +25,16 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          # Debug: Show the DATABASE_URL character by character
-          echo "DEBUG: DATABASE_URL characters:"
-          echo "${FIREBASE_DATABASE_URL}" | od -An -tx1
-          echo "DEBUG: DATABASE_URL length: ${#FIREBASE_DATABASE_URL}"
+          # Strip any whitespace/newlines from the DATABASE_URL
+          CLEAN_DATABASE_URL=$(echo "${FIREBASE_DATABASE_URL}" | tr -d '\n\r' | xargs)
+          
+          echo "✅ Using DATABASE_URL (length: ${#CLEAN_DATABASE_URL})"
           
           # Create firebase-config.js using echo to avoid YAML parsing issues
           echo "const firebaseConfig = {" > firebase-config.js
           echo "  apiKey: \"${FIREBASE_API_KEY}\"," >> firebase-config.js
           echo "  authDomain: \"${FIREBASE_AUTH_DOMAIN}\"," >> firebase-config.js
-          echo "  databaseURL: \"${FIREBASE_DATABASE_URL}\"," >> firebase-config.js
+          echo "  databaseURL: \"${CLEAN_DATABASE_URL}\"," >> firebase-config.js
           echo "  projectId: \"${FIREBASE_PROJECT_ID}\"," >> firebase-config.js
           echo "  storageBucket: \"${FIREBASE_STORAGE_BUCKET}\"," >> firebase-config.js
           echo "  messagingSenderId: \"${FIREBASE_MESSAGING_SENDER_ID}\"," >> firebase-config.js
