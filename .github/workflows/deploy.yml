@@ -36,20 +36,20 @@ jobs:
           echo "" >> firebase-config.js
           echo "function initFirebase() {" >> firebase-config.js
           echo "  if (typeof firebase === 'undefined') {" >> firebase-config.js
-          echo "    console.log('📴 Firebase SDK not loaded');" >> firebase-config.js
+          echo "    console.log('Firebase SDK not loaded');" >> firebase-config.js
           echo "    return false;" >> firebase-config.js
           echo "  }" >> firebase-config.js
           echo "  if (!firebaseConfig.apiKey) {" >> firebase-config.js
-          echo "    console.log('📴 Firebase not configured');" >> firebase-config.js
+          echo "    console.log('Firebase not configured');" >> firebase-config.js
           echo "    return false;" >> firebase-config.js
           echo "  }" >> firebase-config.js
           echo "  try {" >> firebase-config.js
           echo "    firebase.initializeApp(firebaseConfig);" >> firebase-config.js
           echo "    database = firebase.database();" >> firebase-config.js
-          echo "    console.log('✅ Firebase initialized successfully');" >> firebase-config.js
+          echo "    console.log('Firebase initialized successfully');" >> firebase-config.js
           echo "    return true;" >> firebase-config.js
           echo "  } catch (error) {" >> firebase-config.js
-          echo "    console.log('📴 Firebase initialization failed:', error.message);" >> firebase-config.js
+          echo "    console.log('Firebase initialization failed:', error.message);" >> firebase-config.js
           echo "    return false;" >> firebase-config.js
           echo "  }" >> firebase-config.js
           echo "}" >> firebase-config.js
