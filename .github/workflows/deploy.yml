@@ -25,60 +25,11 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          # TEMPORARY: Hardcode the URL to bypass any secret issues
-          CLEAN_DATABASE_URL="https://trip-calendar-4f14e-default-rtdb.firebaseio.com"
-          
-          echo "✅ Using HARDCODED DATABASE_URL (length: ${#CLEAN_DATABASE_URL})"
-          echo "✅ This bypasses the GitHub Secret to test deployment"
-          
-          # Create firebase-config.js using printf to avoid ANY shell interpretation
-          cat > firebase-config.js <<'ENDOFFILE'
-const firebaseConfig = {
-  apiKey: "REPLACE_API_KEY",
-  authDomain: "REPLACE_AUTH_DOMAIN",
-  databaseURL: "REPLACE_DATABASE_URL",
-  projectId: "REPLACE_PROJECT_ID",
-  storageBucket: "REPLACE_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_MESSAGING_SENDER_ID",
-  appId: "REPLACE_APP_ID"
-};
-
-let database;
-
-function initFirebase() {
-  if (typeof firebase === 'undefined') {
-    console.log('Firebase SDK not loaded');
-    return false;
-  }
-  if (!firebaseConfig.apiKey) {
-    console.log('Firebase not configured');
-    return false;
-  }
-  try {
-    firebase.initializeApp(firebaseConfig);
-    database = firebase.database();
-    console.log('Firebase initialized successfully');
-    return true;
-  } catch (error) {
-    console.log('Firebase initialization failed:', error.message);
-    return false;
-  }
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initFirebase, firebaseConfig };
-}
-ENDOFFILE
-
-          # Now do safe replacements using sed with different delimiter
-          sed -i.bak "s|REPLACE_API_KEY|${FIREBASE_API_KEY}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_AUTH_DOMAIN|${FIREBASE_AUTH_DOMAIN}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_DATABASE_URL|${CLEAN_DATABASE_URL}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_PROJECT_ID|${FIREBASE_PROJECT_ID}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_STORAGE_BUCKET|${FIREBASE_STORAGE_BUCKET}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_MESSAGING_SENDER_ID|${FIREBASE_MESSAGING_SENDER_ID}|g" firebase-config.js
-          sed -i.bak "s|REPLACE_APP_ID|${FIREBASE_APP_ID}|g" firebase-config.js
-          rm -f firebase-config.js.bak
+          # The firebase-config.js already exists in the repo, but it's gitignored
+          # We'll use the secrets to update it
+          # For now, let's just use the existing file from the repo as-is
+          echo "✅ Using firebase-config.js from repository"
+          ls -la firebase-config.js
           
           # Verify file was created
           if [ -f firebase-config.js ]; then
