@@ -25,51 +25,44 @@ jobs:
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git site
           cd site
           
-          cat > firebase-config.js << 'EOFILE'
-const firebaseConfig = {
-  apiKey: "REPLACE_API_KEY",
-  authDomain: "REPLACE_AUTH_DOMAIN",
-  databaseURL: "REPLACE_DATABASE_URL",
-  projectId: "REPLACE_PROJECT_ID",
-  storageBucket: "REPLACE_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_MESSAGING_SENDER_ID",
-  appId: "REPLACE_APP_ID"
-};
-
-let database;
-
-function initFirebase() {
-  if (typeof firebase === 'undefined') {
-    console.log('Firebase SDK not loaded');
-    return false;
-  }
-  if (!firebaseConfig.apiKey) {
-    console.log('Firebase not configured');
-    return false;
-  }
-  try {
-    firebase.initializeApp(firebaseConfig);
-    database = firebase.database();
-    console.log('Firebase initialized successfully');
-    return true;
-  } catch (error) {
-    console.log('Firebase initialization failed:', error.message);
-    return false;
-  }
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initFirebase, firebaseConfig };
-}
-EOFILE
-
-          sed -i "s|REPLACE_API_KEY|${FIREBASE_API_KEY}|g" firebase-config.js
-          sed -i "s|REPLACE_AUTH_DOMAIN|${FIREBASE_AUTH_DOMAIN}|g" firebase-config.js
-          sed -i "s|REPLACE_DATABASE_URL|${FIREBASE_DATABASE_URL}|g" firebase-config.js
-          sed -i "s|REPLACE_PROJECT_ID|${FIREBASE_PROJECT_ID}|g" firebase-config.js
-          sed -i "s|REPLACE_STORAGE_BUCKET|${FIREBASE_STORAGE_BUCKET}|g" firebase-config.js
-          sed -i "s|REPLACE_MESSAGING_SENDER_ID|${FIREBASE_MESSAGING_SENDER_ID}|g" firebase-config.js
-          sed -i "s|REPLACE_APP_ID|${FIREBASE_APP_ID}|g" firebase-config.js
+          # Create firebase-config.js using direct writing with env vars
+          {
+            echo "const firebaseConfig = {"
+            echo "  apiKey: \"${FIREBASE_API_KEY}\","
+            echo "  authDomain: \"${FIREBASE_AUTH_DOMAIN}\","
+            echo "  databaseURL: \"${FIREBASE_DATABASE_URL}\","
+            echo "  projectId: \"${FIREBASE_PROJECT_ID}\","
+            echo "  storageBucket: \"${FIREBASE_STORAGE_BUCKET}\","
+            echo "  messagingSenderId: \"${FIREBASE_MESSAGING_SENDER_ID}\","
+            echo "  appId: \"${FIREBASE_APP_ID}\""
+            echo "};"
+            echo ""
+            echo "let database;"
+            echo ""
+            echo "function initFirebase() {"
+            echo "  if (typeof firebase === 'undefined') {"
+            echo "    console.log('Firebase SDK not loaded');"
+            echo "    return false;"
+            echo "  }"
+            echo "  if (!firebaseConfig.apiKey) {"
+            echo "    console.log('Firebase not configured');"
+            echo "    return false;"
+            echo "  }"
+            echo "  try {"
+            echo "    firebase.initializeApp(firebaseConfig);"
+            echo "    database = firebase.database();"
+            echo "    console.log('Firebase initialized successfully');"
+            echo "    return true;"
+            echo "  } catch (error) {"
+            echo "    console.log('Firebase initialization failed:', error.message);"
+            echo "    return false;"
+            echo "  }"
+            echo "}"
+            echo ""
+            echo "if (typeof module !== 'undefined' && module.exports) {"
+            echo "  module.exports = { initFirebase, firebaseConfig };"
+            echo "}"
+          } > firebase-config.js
           
           touch .nojekyll
 
