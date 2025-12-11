@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Config Debug</title>
+</head>
+<body>
+    <h1>Firebase Config Debug</h1>
+    <pre id="output"></pre>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        let debug = '';
+
+        debug += 'firebaseConfig object:\n';
+        debug += JSON.stringify(firebaseConfig, null, 2) + '\n\n';
+
+        debug += 'databaseURL:\n';
+        debug += firebaseConfig.databaseURL + '\n\n';
+
+        debug += 'databaseURL length: ' + firebaseConfig.databaseURL.length + '\n\n';
+
+        debug += 'databaseURL character codes:\n';
+        for (let i = 0; i < firebaseConfig.databaseURL.length; i++) {
+            const char = firebaseConfig.databaseURL[i];
+            const code = char.charCodeAt(0);
+            debug += `${i}: '${char}' = ${code} (0x${code.toString(16)})\n`;
+        }
+
+        debug += '\n\nLooking for backtick (char code 96)...\n';
+        const backtickIndex = firebaseConfig.databaseURL.indexOf('`');
+        if (backtickIndex !== -1) {
+            debug += `FOUND BACKTICK at index ${backtickIndex}!\n`;
+        } else {
+            debug += 'No backtick found in databaseURL.\n';
+        }
+
+        output.textContent = debug;
+    </script>
+</body>
+</html>
+
