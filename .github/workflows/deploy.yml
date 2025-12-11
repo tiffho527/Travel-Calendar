@@ -64,9 +64,13 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 ENDCONFIG
           
-          # Debug: print the generated config (first 15 lines)
-          echo "Generated firebase-config.js:"
-          head -15 firebase-config.js
+          # Verify file was created
+          if [ -f firebase-config.js ]; then
+            echo "✅ firebase-config.js created successfully"
+          else
+            echo "❌ ERROR: firebase-config.js not created"
+            exit 1
+          fi
           
           touch .nojekyll
 
@@ -79,6 +83,10 @@ ENDCONFIG
           
           git checkout --orphan gh-pages-new
           
+          # Force add firebase-config.js even though it's in .gitignore
+          git add -f firebase-config.js
+          
+          # Add all other files
           git add -A
           
           git commit -m "Deploy from main with Firebase config [skip ci]"
