@@ -87,8 +87,8 @@ jobs:
             # Checkout gh-pages
             git checkout -B gh-pages origin/gh-pages
             
-            # Reset to main (brings all files from main)
-            git reset --hard main
+            # Reset to origin/main (brings all files from main)
+            git reset --hard origin/main
             
             # Re-create firebase-config.js (it's in .gitignore on main)
             echo "// Firebase Configuration (injected from GitHub Secrets during deployment)" > firebase-config.js
