@@ -55,20 +55,41 @@
 <body>
 
 <header>
-  <h1>🌍 My Trip Calendar</h1>
-  <div></div>
-  <button id="monthViewBtn">Month</button>
-  <button id="weekViewBtn">Week</button>
-  <button id="dayViewBtn">Day</button>
-  <button id="toggleViewBtn">Toggle Calendar/List</button>
-  <button id="addEventBtn">Add Event</button>
-  <button id="exportBtn">Export Events</button>
-  <button id="importBtn">Import Events</button>
-  <button id="resetEventsBtn" style="background:#ff9800;">🔄 Reset Events</button>
-  <button onclick="window.location.href='index-local.html'" style="background:#9e9e9e;">📴 Local Mode Only</button>
+  <div class="header-left">
+    <h1>🌍 My Trip Calendar</h1>
+  </div>
+
+  <div class="header-center">
+    <button id="addEventBtn" class="btn-primary">+ Add Event</button>
+
+    <div id="viewControls" class="view-controls">
+      <div class="button-group">
+        <button id="monthViewBtn" class="active">Month</button>
+        <button id="weekViewBtn">Week</button>
+        <button id="dayViewBtn">Day</button>
+      </div>
+      <button id="toggleViewBtn" class="btn-toggle">📅 Toggle View</button>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div id="connectionStatus" class="status-connecting">🔄 Connecting...</div>
+    <button id="actionsMenuBtn" class="btn-actions" aria-label="Actions menu">
+      <span class="hamburger-icon">☰</span>
+    </button>
+  </div>
+
   <input type="file" id="importFile" accept=".json" style="display:none;">
-  <!-- Status indicator will be added here by script -->
 </header>
+
+<!-- Actions Dropdown Menu -->
+<div id="actionsMenu" class="actions-menu">
+  <button id="exportBtn" class="menu-item">📤 Export Events</button>
+  <button id="importBtn" class="menu-item">📥 Import Events</button>
+  <button id="resetEventsBtn" class="menu-item">🔄 Reset Events</button>
+  <hr class="menu-divider">
+  <button id="localModeBtn" class="menu-item">📴 Switch to Local Mode</button>
+</div>
 
 <div id="calendar"></div>
 <div id="listView"></div>

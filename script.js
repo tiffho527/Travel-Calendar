@@ -8,12 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let stored = [];
   let isFirebaseReady = false;
 
-  // Connection status indicator
-  const statusIndicator = document.createElement('div');
-  statusIndicator.id = 'connectionStatus';
-  statusIndicator.className = 'status-connecting';
-  statusIndicator.innerHTML = '🔄 Connecting...';
-  document.querySelector('header').appendChild(statusIndicator);
+  // Connection status indicator (get existing element from HTML)
+  const statusIndicator = document.getElementById('connectionStatus');
 
   function toDateTimeLocalString(dateStr){
     const d = new Date(dateStr);
@@ -305,16 +301,57 @@ document.addEventListener('DOMContentLoaded', function() {
   function openEventModal(eventObj){ openEventModalFromId(eventObj.id); }
 
   function setupEventHandlers() {
-    document.getElementById('monthViewBtn').onclick=()=>calendar.changeView('dayGridMonth');
-    document.getElementById('weekViewBtn').onclick=()=>calendar.changeView('timeGridWeek');
-    document.getElementById('dayViewBtn').onclick=()=>calendar.changeView('timeGridDay');
+    // View button handlers with active state
+    const viewButtons = {
+      monthViewBtn: 'dayGridMonth',
+      weekViewBtn: 'timeGridWeek',
+      dayViewBtn: 'timeGridDay'
+    };
 
+    Object.keys(viewButtons).forEach(btnId => {
+      document.getElementById(btnId).onclick = function() {
+        calendar.changeView(viewButtons[btnId]);
+        // Update active state
+        document.querySelectorAll('.button-group button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+      };
+    });
+
+    // Toggle view handler - hide/show view buttons in list mode
     document.getElementById('toggleViewBtn').onclick=function(){
       isCalendarView=!isCalendarView;
       calendarEl.style.display = isCalendarView ? 'block':'none';
       listEl.style.display = isCalendarView ? 'none':'block';
+
+      // Hide Month/Week/Day buttons when in list view
+      const buttonGroup = document.querySelector('.button-group');
+      buttonGroup.style.display = isCalendarView ? 'flex' : 'none';
+
       if(!isCalendarView) renderList();
     };
+
+    // Hamburger menu toggle
+    const actionsMenuBtn = document.getElementById('actionsMenuBtn');
+    const actionsMenu = document.getElementById('actionsMenu');
+
+    actionsMenuBtn.onclick = function(e) {
+      e.stopPropagation();
+      actionsMenu.classList.toggle('show');
+    };
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!actionsMenu.contains(e.target) && !actionsMenuBtn.contains(e.target)) {
+        actionsMenu.classList.remove('show');
+      }
+    });
+
+    // Close menu after selecting an item
+    actionsMenu.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function() {
+        actionsMenu.classList.remove('show');
+      });
+    });
 
     document.getElementById('addEventBtn').onclick=function(){
       currentEventId=null;
@@ -439,6 +476,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if(!isCalendarView) renderList();
         alert(`Successfully reset to ${stored.length} events!`);
       }
+    };
+
+    // Switch to Local Mode
+    document.getElementById('localModeBtn').onclick = function() {
+      window.location.href = 'index-local.html';
     };
 
     document.getElementById('importFile').onchange = function(e) {
