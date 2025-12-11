@@ -75,75 +75,20 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
-          # We're already on main branch from clone
-          # firebase-config.js and .nojekyll are already created
+          # Create a new orphan branch for gh-pages (fresh start every time)
+          git checkout --orphan gh-pages-new
           
-          # Fetch existing gh-pages if it exists
-          git fetch origin gh-pages 2>/dev/null || true
-          
-          # Check if gh-pages exists remotely
-          if git ls-remote --exit-code --heads origin gh-pages; then
-            echo "gh-pages exists remotely"
-            # Checkout gh-pages
-            git checkout -B gh-pages origin/gh-pages
-            
-            # Reset to origin/main (brings all files from main)
-            git reset --hard origin/main
-            
-            # Re-create firebase-config.js (it's in .gitignore on main)
-            echo "// Firebase Configuration (injected from GitHub Secrets during deployment)" > firebase-config.js
-            echo "const firebaseConfig = {" >> firebase-config.js
-            echo "  apiKey: \"${{ secrets.FIREBASE_API_KEY }}\"," >> firebase-config.js
-            echo "  authDomain: \"${{ secrets.FIREBASE_AUTH_DOMAIN }}\"," >> firebase-config.js
-            echo "  databaseURL: \"${{ secrets.FIREBASE_DATABASE_URL }}\"," >> firebase-config.js
-            echo "  projectId: \"${{ secrets.FIREBASE_PROJECT_ID }}\"," >> firebase-config.js
-            echo "  storageBucket: \"${{ secrets.FIREBASE_STORAGE_BUCKET }}\"," >> firebase-config.js
-            echo "  messagingSenderId: \"${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}\"," >> firebase-config.js
-            echo "  appId: \"${{ secrets.FIREBASE_APP_ID }}\"" >> firebase-config.js
-            echo "};" >> firebase-config.js
-            echo "" >> firebase-config.js
-            echo "let database;" >> firebase-config.js
-            echo "" >> firebase-config.js
-            echo "function initFirebase() {" >> firebase-config.js
-            echo "  if (typeof firebase === 'undefined') {" >> firebase-config.js
-            echo "    console.log('📴 Firebase SDK not loaded');" >> firebase-config.js
-            echo "    return false;" >> firebase-config.js
-            echo "  }" >> firebase-config.js
-            echo "  if (!firebaseConfig.apiKey) {" >> firebase-config.js
-            echo "    console.log('📴 Firebase not configured');" >> firebase-config.js
-            echo "    return false;" >> firebase-config.js
-            echo "  }" >> firebase-config.js
-            echo "  try {" >> firebase-config.js
-            echo "    firebase.initializeApp(firebaseConfig);" >> firebase-config.js
-            echo "    database = firebase.database();" >> firebase-config.js
-            echo "    console.log('✅ Firebase initialized successfully');" >> firebase-config.js
-            echo "    return true;" >> firebase-config.js
-            echo "  } catch (error) {" >> firebase-config.js
-            echo "    console.log('📴 Firebase initialization failed:', error.message);" >> firebase-config.js
-            echo "    return false;" >> firebase-config.js
-            echo "  }" >> firebase-config.js
-            echo "}" >> firebase-config.js
-            echo "" >> firebase-config.js
-            echo "if (typeof module !== 'undefined' && module.exports) {" >> firebase-config.js
-            echo "  module.exports = { initFirebase, firebaseConfig };" >> firebase-config.js
-            echo "}" >> firebase-config.js
-            
-            # Add firebase-config.js and .nojekyll
-            git add -f firebase-config.js .nojekyll
-          else
-            echo "Creating new gh-pages branch"
-            # Create new orphan gh-pages branch
-            git checkout --orphan gh-pages
-            
-            # Add all files
-            git add -f firebase-config.js .nojekyll
-            git add -A
-          fi
+          # Add all files including firebase-config.js and .nojekyll
+          git add -A
           
           # Commit
           git commit -m "Deploy from main with Firebase config [skip ci]"
           
-          # Force push to gh-pages
+          # Delete old gh-pages branch if it exists
+          git push origin --delete gh-pages 2>/dev/null || true
+          
+          # Push new branch as gh-pages
+          git branch -M gh-pages-new gh-pages
           git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
 
 
