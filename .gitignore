@@ -1,5 +1,4 @@
-# Firebase configuration - NOW COMMITTED (API key is public but restricted to domain)
-# firebase-config.js
+
 
 # Environment files
 .env
