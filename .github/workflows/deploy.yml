@@ -77,14 +77,33 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           
-          # Create orphan gh-pages branch
-          git checkout --orphan gh-pages
+          # Fetch existing gh-pages if it exists
+          git fetch origin gh-pages 2>/dev/null || true
           
-          # Add all files
-          git add -A
+          # Check if gh-pages exists
+          if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+            echo "gh-pages exists, checking it out"
+            git checkout gh-pages
+            
+            # Remove all files except .git
+            git rm -rf .
+            
+            # Copy all files from main
+            git checkout main -- .
+            
+            # Force add firebase-config.js and .nojekyll (they're in .gitignore)
+            git add -f firebase-config.js .nojekyll
+          else
+            echo "Creating new gh-pages branch"
+            # Create orphan gh-pages branch
+            git checkout --orphan gh-pages
+            
+            # Add all files including firebase-config.js
+            git add -A
+          fi
           
           # Commit
-          git commit -m "Deploy from main with Firebase config [skip ci]"
+          git commit -m "Deploy from main with Firebase config [skip ci]" || echo "No changes to commit"
           
           # Force push to gh-pages
           git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
